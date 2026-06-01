@@ -1,36 +1,374 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Buy-Or-Bye (冲动购物阻击站)
 
-## Getting Started
+> 用 AI 帮你克制冲动消费 —— 让「魔鬼」和「天使」替你辩论一场。
 
-First, run the development server:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/waterwxr000/Buy-Or-Bye)
+
+## 🎯 项目简介
+
+冲动购物阻击站是一个基于 AI 的消费决策辅助工具。当你想买东西但犹豫不决时，让 AI 扮演两个对立角色进行辩论：
+- **魔鬼种草机**：极力煽风点火，说服你买买买
+- **理性钱包守护者**：冷静理性分析，帮你捂紧钱包
+
+通过观看双方辩论，你可以更清晰地认识到自己的消费动机，做出更理性的决策。
+
+## ✨ 功能特色
+
+### 1. 🔥 辩论战场（首页）
+**核心功能**：AI 双方辩论，帮你看清消费冲动
+
+**使用流程**：
+1. 填写商品信息
+   - 商品名称（必填）：例如 "Sony WH-1000XM5 降噪耳机"
+   - 商品价格（必填）：例如 "1999"
+   - 购买借口（可选）：例如 "打折促销、奖励自己、朋友都有"
+   - 冲动指数（1-10）：滑动条选择，实时显示冷静/疯狂程度
+
+2. 点击「开战！让双方辩论」启动 AI 辩论
+   - 左栏：魔鬼种草机（玫瑰色主题，诱惑模式）
+   - 右栏：理性钱包守护者（青色主题，理性模式）
+   - 实时流式显示辩论内容
+
+3. 深入辩论（可选）
+   - 在底部输入框输入你的想法或狡辩
+   - 点击发送或按 Enter 键
+   - AI 会根据你的发言继续辩论
+
+4. **生成最终结论**（新功能 🆕）
+   - 点击「生成最终结论」按钮（紫色渐变）
+   - AI 会分析整场辩论内容
+   - 弹窗展示中立的最终建议，包括：
+     - 📊 核心观点总结
+     - 🎯 最终建议
+     - 💡 决策参考
+
+5. 结束辩论
+   - 点击「结束辩论」按钮
+   - 选择最终结果：「成功克制，不买了」或「好吧，还是买了」
+   - 结果自动保存到消费报告
+
+6. 签署冷静契约（可选）
+   - 点击「签署冷静契约」按钮
+   - 自动生成 72 小时冷静期契约
+   - 契约会同步到「冷静契约」页面
+
+**技术特点**：
+- 实时 SSE 流式输出，观看辩论过程更流畅
+- Markdown 渲染，辩论内容格式美观
+- 自动滚动到底部，无需手动滚动
+- 支持暗色模式，保护眼睛
+
+---
+
+### 2. 📝 愿望清单
+**功能**：记录想买的东西，冷静后再决定
+
+**使用流程**：
+1. 点击「添加到愿望清单」
+2. 填写商品名称、价格、备注
+3. 保存后可在愿望清单页面查看
+4. 冷静后可以决定：
+   - 移到辩论战场分析
+   - 从清单中删除
+   - 标记为已购买
+
+**数据持久化**：使用 localStorage 存储，关闭浏览器后数据不丢失
+
+---
+
+### 3. 📋 冷静契约
+**功能**：签署冷静期契约，约束自己不冲动消费
+
+**契约类型**：
+- 24 小时冷静期
+- 48 小时冷静期
+- 72 小时冷静期（从辩论战场快速签署）
+- 7 天冷静期
+- 14 天冷静期
+
+**使用流程**：
+1. 选择冷静期时长
+2. 填写契约条款（例如："不购买 XXX 商品"）
+3. 签署契约
+4. 在契约到期前，约束自己的消费行为
+5. 契约到期后，标记为已完成
+
+**数据同步**：
+- 从辩论战场签署的 72 小时契约会自动同步到这里
+- 显示契约标题、条款、截止时间、状态
+
+---
+
+### 4. 📊 消费报告
+**功能**：查看消费统计数据，回顾辩论历史
+
+**统计指标**：
+- **拦截金额**：成功克制消费的总金额
+- **自律胜率**：未购买次数 / 总辩论次数
+- **实际支出**：经辩论后实际购买的金额
+- **辩论场次**：使用阻击站的总次数
+
+**数据可视化**：
+- 月度消费趋势图（拦截 vs 支出）
+- 辩论历史记录（商品名、价格、结果、日期）
+
+**数据导出**（可选）：
+- 导出 CSV 格式的消费报告
+- 用于进一步分析或备份
+
+---
+
+### 5. ℹ️ 关于帮助
+**功能**：项目介绍、使用指南、小提示
+
+**内容**：
+- 项目背景和理念
+- 使用指南和技巧
+- 理性消费的小提示
+- 开源协议和贡献指南
+
+---
+
+## 🛠️ 技术栈
+
+### 前端
+- **框架**: Next.js 16 (App Router)
+- **UI 库**: React 19 + TypeScript
+- **样式**: Tailwind CSS v4
+- **图标**: lucide-react
+- **Markdown**: react-markdown
+
+### AI 能力
+- **模型**: DeepSeek API
+- **调用方式**: SSE (Server-Sent Events) 流式调用
+- **提示词工程**: 角色扮演 + 结构化输出
+
+### 数据存储
+- **持久化**: localStorage（无需后端服务器）
+- **数据结构**:
+  - `impulse_debates`: 辩论历史
+  - `impulse_wishlist`: 愿望清单
+  - `impulse_contracts`: 冷静契约
+
+### 开发工具
+- **代码规范**: ESLint + Prettier
+- **类型检查**: TypeScript
+- **版本控制**: Git
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+- Node.js 18.x 或更高版本
+- npm 或 pnpm 包管理器
+
+### 1. 克隆项目
+
+```bash
+git clone <repository-url>
+cd impulse-blocker
+```
+
+### 2. 安装依赖
+
+```bash
+npm install
+# 或使用 pnpm
+pnpm install
+```
+
+### 3. 配置环境变量
+
+在项目根目录创建 `.env.local` 文件：
+
+```env
+DEEPSEEK_API_KEY=你的DeepSeek_API_KEY
+```
+
+**获取 API Key**：
+1. 访问 [DeepSeek 开放平台](https://platform.deepseek.com)
+2. 注册账号并登录
+3. 进入「API Keys」页面
+4. 创建新的 API Key
+5. 复制并保存到 `.env.local` 文件
+
+> ⚠️ 注意：不要将 `.env.local` 文件提交到 Git 仓库
+
+### 4. 启动开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+服务器启动后，访问 [http://localhost:3000](http://localhost:3000) 即可使用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5. 构建生产版本（可选）
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 项目结构
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+impulse-blocker/
+├── src/
+│   ├── app/                          # Next.js App Router 页面
+│   │   ├── api/                     # API 路由
+│   │   │   ├── debate/route.ts      # 辩论接口（SSE 流式）
+│   │   │   └── debate-conclusion/route.ts  # 生成结论接口（新功能 🆕）
+│   │   ├── page.tsx                 # 首页（辩论战场）
+│   │   ├── wishlist/page.tsx        # 愿望清单页面
+│   │   ├── contracts/page.tsx       # 冷静契约页面
+│   │   ├── stats/page.tsx           # 消费报告页面
+│   │   ├── about/page.tsx           # 关于帮助页面
+│   │   ├── layout.tsx               # 全局布局
+│   │   └── globals.css              # 全局样式
+│   ├── components/                   # React 组件
+│   │   ├── Navbar.tsx              # 顶部导航栏
+│   │   ├── NBall.tsx              # 通知弹窗组件
+│   │   ├── ThemeProvider.tsx        # 主题提供者
+│   │   └── ThemeToggle.tsx          # 主题切换按钮
+│   └── lib/                         # 工具函数
+│       └── storage.ts               # localStorage 工具函数
+├── public/                          # 静态资源
+├── .env.local                        # 环境变量（需自行创建）
+├── next.config.ts                    # Next.js 配置
+├── tailwind.config.ts                # Tailwind CSS 配置
+├── tsconfig.json                     # TypeScript 配置
+└── package.json                     # 项目依赖
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📖 使用指南
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 场景 1：犹豫是否购买某商品
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. 打开首页，填写商品信息
+2. 点击「开战」启动 AI 辩论
+3. 观看双方辩论，了解利弊
+4. 如有疑问，输入你的想法继续辩论
+5. 点击「生成最终结论」获取 AI 建议
+6. 点击「结束辩论」，记录最终结果
+
+### 场景 2：想买但预算不足
+
+1. 将商品添加到「愿望清单」
+2. 等待一段时间冷静思考
+3. 冷静后可以：
+   - 移到辩论战场深入分析
+   - 从清单中删除（已经不想买了）
+   - 标记为已购买（已经买了）
+
+### 场景 3：冲动指数很高
+
+1. 在辩论战场点击「签署冷静契约」
+2. 选择冷静期时长（例如 72 小时）
+3. 在冷静期内，约束自己的消费行为
+4. 冷静期结束后，回顾是否还想购买
+
+### 场景 4：回顾消费历史
+
+1. 打开「消费报告」页面
+2. 查看拦截金额、自律胜率等统计数据
+3. 查看月度消费趋势图
+4. 回顾辩论历史记录
+
+---
+
+## 🎨 界面预览
+
+### 首页（辩论战场）
+- 左栏：魔鬼种草机（玫瑰色主题）
+- 右栏：理性钱包守护者（青色主题）
+- 底部：输入框 + 操作按钮
+
+### 愿望清单
+- 卡片式布局
+- 显示商品名称、价格、备注
+- 支持删除和标记
+
+### 冷静契约
+- 契约列表
+- 显示截止时间和状态
+- 支持标记完成
+
+### 消费报告
+- 统计卡片（拦截金额、自律胜率等）
+- 月度趋势图
+- 辩论历史记录
+
+---
+
+## 🔧 开发指南
+
+### 添加新功能
+
+1. 在 `src/app/` 目录下创建新页面
+2. 在 `src/components/` 目录下创建新组件
+3. 在 `src/lib/storage.ts` 中添加数据操作函数
+4. 更新导航栏 `src/components/Navbar.tsx`
+
+### 修改 AI 提示词
+
+编辑 `src/app/api/debate/route.ts` 中的 `SYSTEM_PROMPT` 变量
+
+### 修改样式
+
+项目使用 Tailwind CSS，直接在组件中使用类名即可
+
+---
+
+## 🐛 常见问题
+
+### 1. DeepSeek API 调用失败
+
+**原因**：API Key 未配置或配置错误
+
+**解决方法**：
+- 检查 `.env.local` 文件是否存在
+- 检查 `DEEPSEEK_API_KEY` 是否正确
+- 重启开发服务器
+
+### 2. 数据丢失
+
+**原因**：localStorage 被清空
+
+**解决方法**：
+- localStorage 数据存储在浏览器中
+- 清除浏览器数据会导致数据丢失
+- 建议定期导出消费报告备份
+
+### 3. 底部输入框看不到
+
+**原因**：内容过长时，底部输入区被挤出可视区域
+
+**解决方法**：
+- 已修复：添加 `min-h-0` 确保底部输入区始终可见
+- 如仍有问题，尝试刷新页面
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 🙏 致谢
+
+- [Next.js](https://nextjs.org/) - React 框架
+- [DeepSeek](https://www.deepseek.com/) - AI 模型
+- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
+- [lucide-react](https://lucide.dev/) - 图标库
+
+---
+
+## 📧 联系方式
+
+如有问题或建议，欢迎提交 Issue 或 Pull Request。

@@ -1,7 +1,7 @@
 {
-  "name": "20260526175008",
+  "name": "buy-or-bye",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
