@@ -382,8 +382,9 @@ export default function Home() {
           </div>
         </main>
       ) : stage === "battle" ? (
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 flex flex-col md:flex-row min-h-0">
+        <div className="flex flex-col h-[calc(100vh-56px)]">
+          {/* 左右辩论区域 - 占据除底部外的所有空间 */}
+          <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
             {/* 左栏：魔鬼种草机 */}
             <div className="flex-1 flex flex-col min-h-0 border-b md:border-b-0 md:border-r border-zinc-200 bg-gradient-to-b from-rose-100/40 via-white to-white dark:border-zinc-800 dark:bg-gradient-to-b dark:from-rose-950/30 dark:via-zinc-950 dark:to-zinc-950">
               <div className="flex items-center gap-2 px-4 py-3 border-b border-rose-200/50 bg-rose-50/50 shrink-0 dark:border-rose-900/30 dark:bg-rose-950/20">
@@ -473,82 +474,159 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 底部输入区 */}
-          <div className="shrink-0 border-t border-zinc-200 bg-white/95 backdrop-blur-md p-3 flex items-center gap-3 dark:border-zinc-800 dark:bg-zinc-900/95">
-            <input
-              type="text"
-              placeholder="你还有什么想狡辩的吗？"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              disabled={loading}
-              className="flex-1 rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500"
-            />
-            <button
-              onClick={handleSend}
-              disabled={loading || !input.trim()}
-              className="rounded-xl bg-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-300 transition disabled:opacity-40 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleFinishDebate}
-              className="whitespace-nowrap rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
-            >
-              结束辩论
-            </button>
-            <button
-              onClick={generateConclusion}
-              disabled={loadingConclusion}
-              className="whitespace-nowrap rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5 disabled:opacity-50"
-            >
-              {loadingConclusion ? (
-                <><Loader2 className="w-4 h-4 animate-spin" />生成中...</>
-              ) : (
-                <><Brain className="w-4 h-4" />生成最终结论</>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                const hours = 72;
-                const deadlineDate = new Date(Date.now() + hours * 3600 * 1000);
-                const deadline = deadlineDate.toLocaleString("zh-CN", {
-                  month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
-                });
-                
-                // 保存到 localStorage
-                addContract({
-                  id: Date.now(),
-                  title: `72小时冷静期 - ${form.name}`,
-                  items: [
-                    `商品：${form.name}`,
-                    `价格：¥${form.price}`,
-                    `冲动指数：${form.impulse}/10`,
-                    form.excuse ? `购买借口：${form.excuse}` : "",
-                  ].filter(Boolean),
-                  deadline: deadlineDate.toISOString(),
-                  done: false,
-                  createdAt: new Date().toISOString(),
-                });
-                
-                alert(`🎉 72小时冷静契约已签署！\n截止时间：${deadline}\n我们会在这期间替你盯着钱包的。`);
-              }}
-              className="whitespace-nowrap rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
-            >
-              <FileSignature className="w-4 h-4" />
-              签署冷静契约
-            </button>
+          {/* 底部输入区 - 响应式布局 */}
+          <div className="shrink-0 border-t border-zinc-200 bg-white/95 backdrop-blur-md p-3 dark:border-zinc-800 dark:bg-zinc-900/95">
+            {/* 桌面端：输入框、发送按钮、功能按钮都在一行 */}
+            <div className="hidden md:flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="你还有什么想狡辩的吗？"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                disabled={loading}
+                className="flex-1 rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500"
+              />
+              <button
+                onClick={handleSend}
+                disabled={loading || !input.trim()}
+                className="rounded-xl bg-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-300 transition disabled:opacity-40 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleFinishDebate}
+                className="whitespace-nowrap rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
+              >
+                结束辩论
+              </button>
+              <button
+                onClick={generateConclusion}
+                disabled={loadingConclusion}
+                className="whitespace-nowrap rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {loadingConclusion ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" />生成中...</>
+                ) : (
+                  <><Brain className="w-4 h-4" />生成最终结论</>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  const hours = 72;
+                  const deadlineDate = new Date(Date.now() + hours * 3600 * 1000);
+                  const deadline = deadlineDate.toLocaleString("zh-CN", {
+                    month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+                  });
+                  
+                  // 保存到 localStorage
+                  addContract({
+                    id: Date.now(),
+                    title: `72小时冷静期 - ${form.name}`,
+                    items: [
+                      `商品：${form.name}`,
+                      `价格：¥${form.price}`,
+                      `冲动指数：${form.impulse}/10`,
+                      form.excuse ? `购买借口：${form.excuse}` : "",
+                    ].filter(Boolean),
+                    deadline: deadlineDate.toISOString(),
+                    done: false,
+                    createdAt: new Date().toISOString(),
+                  });
+                  
+                  alert(`🎉 72小时冷静契约已签署！\n截止时间：${deadline}\n我们会在这期间替你盯着钱包的。`);
+                }}
+                className="whitespace-nowrap rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
+              >
+                <FileSignature className="w-4 h-4" />
+                签署冷静契约
+              </button>
+            </div>
+
+            {/* 移动端：输入框和功能按钮分两行显示 */}
+            <div className="md:hidden">
+              {/* 第一行：输入框 + 发送按钮 */}
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="你还有什么想狡辩的吗？"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  disabled={loading}
+                  className="flex-1 rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 transition disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={loading || !input.trim()}
+                  className="rounded-xl bg-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-300 transition disabled:opacity-40 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* 第二行：功能按钮横向滚动 */}
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                <button
+                  onClick={handleFinishDebate}
+                  className="flex-shrink-0 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-2.5 text-sm font-bold text-white shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
+                >
+                  结束辩论
+                </button>
+                <button
+                  onClick={generateConclusion}
+                  disabled={loadingConclusion}
+                  className="flex-shrink-0 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-3 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {loadingConclusion ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" />生成中</>
+                  ) : (
+                    <><Brain className="w-4 h-4" />生成结论</>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    const hours = 72;
+                    const deadlineDate = new Date(Date.now() + hours * 3600 * 1000);
+                    const deadline = deadlineDate.toLocaleString("zh-CN", {
+                      month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+                    });
+                    
+                    // 保存到 localStorage
+                    addContract({
+                      id: Date.now(),
+                      title: `72小时冷静期 - ${form.name}`,
+                      items: [
+                        `商品：${form.name}`,
+                        `价格：¥${form.price}`,
+                        `冲动指数：${form.impulse}/10`,
+                        form.excuse ? `购买借口：${form.excuse}` : "",
+                      ].filter(Boolean),
+                      deadline: deadlineDate.toISOString(),
+                      done: false,
+                      createdAt: new Date().toISOString(),
+                    });
+                    
+                    alert(`🎉 72小时冷静契约已签署！\n截止时间：${deadline}\n我们会在这期间替你盯着钱包的。`);
+                  }}
+                  className="flex-shrink-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition hover:scale-[1.03] active:scale-[0.97] flex items-center gap-1.5"
+                >
+                  <FileSignature className="w-4 h-4" />
+                  签署契约
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* 结果选择弹窗 */}
+          {/* 结果选择弹窗 - 响应式 */}
           {showResultModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-              <div className="w-full max-w-sm rounded-2xl border border-zinc-700 bg-zinc-900 p-6 animate-fade-in">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-sm rounded-2xl border border-zinc-700 bg-zinc-900 p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
                 <h3 className="text-lg font-bold text-zinc-100 mb-1 text-center">辩论结束！</h3>
                 <p className="text-sm text-zinc-500 text-center mb-6">
                   经过这场辩论，你最终决定——
                 </p>
-                <div className="font-medium text-zinc-300 text-sm mb-4 text-center">
+                <div className="font-medium text-zinc-300 text-sm mb-4 text-center break-words">
                   {form.name} <span className="text-rose-400">¥{form.price}</span>
                 </div>
                 <div className="space-y-3">

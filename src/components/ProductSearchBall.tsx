@@ -35,7 +35,7 @@ async function* readSSEStream(
   }
 }
 
-export default function NBall() {
+export default function ProductSearchBall() {
   const [position, setPosition] = useState({ x: 20, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
@@ -51,34 +51,62 @@ export default function NBall() {
   // 确保只在客户端渲染
   useEffect(() => {
     setIsClient(true);
-    const savedPos = localStorage.getItem("nball-position");
+    const savedPos = localStorage.getItem("product-search-ball-position");
     if (savedPos) {
-      setPosition(JSON.parse(savedPos));
+      try {
+        setPosition(JSON.parse(savedPos));
+      } catch {
+        // ignore
+      }
     }
   }, []);
 
-  // 拖拽开始
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // 拖拽开始 - 同时支持鼠标和触摸
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     if ((e.target as HTMLElement).closest("button")) return;
     setIsDragging(true);
-    hasDragged.current = false; // 重置拖拽标记
+    hasDragged.current = false;
+    
     const rect = ballRef.current?.getBoundingClientRect();
     if (rect) {
+      let clientX, clientY;
+      if ('touches' in e) {
+        // 触摸事件
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        // 鼠标事件
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
       dragOffset.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: clientX - rect.left,
+        y: clientY - rect.top,
       };
     }
   };
 
-  // 拖拽移动
+  // 拖拽移动 - 同时支持鼠标和触摸
   useEffect(() => {
     if (!isDragging) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      hasDragged.current = true; // 标记为已拖拽
-      const newX = e.clientX - dragOffset.current.x;
-      const newY = e.clientY - dragOffset.current.y;
+    const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+      hasDragged.current = true;
+      
+      let clientX, clientY;
+      if ('touches' in e) {
+        // 触摸事件
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        // 鼠标事件
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
+      const newX = clientX - dragOffset.current.x;
+      const newY = clientY - dragOffset.current.y;
       const maxX = window.innerWidth - 64;
       const maxY = window.innerHeight - 64;
 
@@ -90,15 +118,19 @@ export default function NBall() {
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      localStorage.setItem("nball-position", JSON.stringify(position));
+      localStorage.setItem("product-search-ball-position", JSON.stringify(position));
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove as any);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchmove", handleMouseMove as any, { passive: false });
+    window.addEventListener("touchend", handleMouseUp);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", handleMouseMove as any);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleMouseMove as any);
+      window.removeEventListener("touchend", handleMouseUp);
     };
   }, [isDragging, position]);
 
@@ -142,14 +174,15 @@ export default function NBall() {
 
   return (
     <>
-      {/* 可拖拽小球 - 美观设计（无N字母） */}
+      {/* 可拖拽小球 - 商品搜索 */}
       <div
         ref={ballRef}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleMouseDown as any}
         onClick={() => !hasDragged.current && setShowDialog(true)}
         className={`fixed z-50 w-16 h-16 rounded-full cursor-move hover:scale-110 active:scale-95 transition ${
           isDragging ? "opacity-80" : ""
-        } flex items-center justify-center`}
+        } flex items-center justify-center shadow-lg touch-none`}
         style={{
           left: position.x,
           top: position.y,
@@ -157,21 +190,22 @@ export default function NBall() {
           boxShadow: "0 0 20px rgba(6, 182, 212, 0.4), 0 0 40px rgba(59, 130, 246, 0.2)",
           animation: "pulse-glow 2s ease-in-out infinite",
         }}
+        title="点击搜索商品资讯"
       >
         {/* 内部光晕效果 */}
         <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
-
+        
         {/* 搜索图标 */}
         <Search className="relative z-10 w-7 h-7 text-white drop-shadow-lg" />
       </div>
 
       {/* 对话框 */}
       {showDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm dark:bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-6 animate-fade-in max-h-[80vh] overflow-hidden flex flex-col dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-cyan-500 dark:text-cyan-400">
-                🔍 购物情报助手
+                🔍 商品资讯搜索
               </h3>
               <button
                 onClick={() => {
@@ -215,7 +249,7 @@ export default function NBall() {
             {/* 报告展示区 */}
             {report && (
               <div className="flex-1 overflow-y-auto rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/60">
-                <div className="prose prose-sm max-w-none
+                <div className="prose prose-sm max-w-none 
                   prose-headings:text-cyan-500 prose-headings:font-bold dark:prose-headings:text-cyan-400
                   prose-strong:text-zinc-800 dark:prose-strong:text-zinc-200
                   prose-li:text-zinc-700 prose-li:marker:text-cyan-500 dark:prose-li:text-zinc-300 dark:prose-li:marker:text-cyan-500

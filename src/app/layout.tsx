@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import NBall from "@/components/NBall";
+import ProductSearchBall from "@/components/ProductSearchBall";
 import ThemeProvider from "@/components/ThemeProvider";
 
 const geistSans = Geist({
@@ -37,7 +37,7 @@ export default function RootLayout({
           <div className="flex-1 flex flex-col">
             {children}
           </div>
-          <NBall />
+          <ProductSearchBall />
         </ThemeProvider>
       </body>
     </html>
