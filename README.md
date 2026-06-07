@@ -587,7 +587,7 @@ return (
 
 ### 6.7 商品资讯搜索
 
-![商品调研](public/screenshots/product-research.png)
+![商品调研](./public/screenshots/product-research.png)
 
 *图 6-7 商品资讯搜索 - AI 生成商品调研报告*
 
